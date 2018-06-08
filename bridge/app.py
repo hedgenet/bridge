@@ -1,16 +1,19 @@
 import json
 import requests
 import os
+import time
+import exchange_rate
+import hist_data
 
 from email_validator import validate_email
 
-
 def create_order(event, context):
+    """ Creates an order """
 
     delivery_email = None
     amount = None
 
-    # extract required data
+    # Extract required data
     try:
         request_data = json.loads(event['body'])
         delivery_email = request_data['delivery_email']
@@ -23,8 +26,7 @@ def create_order(event, context):
                     })
                 }
 
-
-    # make sure email address is valid
+    # Make sure email address is valid
     v = None
     try:
         v = validate_email(delivery_email)
@@ -37,7 +39,7 @@ def create_order(event, context):
                 }
 
 
-    # make sure the provided amount is greater then the minimum purchase amount
+    # Make sure the provided amount is greater then the minimum purchase amount
     min_amount = float(os.environ['MIN_PURCHASE_AMOUNT'])
     if amount < min_amount :
         return {
@@ -47,12 +49,21 @@ def create_order(event, context):
                     })
                 }
 
+    # Record the creation time of the order
+    created_at = int(time.time())
+
+    # Obtain the current spot rate
+    pair = os.environ['CURRENCY_PAIR']
+    bid, ask = exchange_rate.spot(pair)
 
     return {
             "statusCode":200,
             "body": json.dumps({
                 'delivery_email':delivery_email,
-                'amount': amount
+                'amount': amount,
+                'created_at':created_at,
+                'bid':bid,
+                'ask':ask
                 })
             }
 
