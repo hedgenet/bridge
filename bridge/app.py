@@ -75,6 +75,8 @@ def create_order(event, context):
     # generate a unique ID for the order
     order_id = payment.create_order_id()
 
+
+    # assemble the created order
     created_order = {
             "statusCode":200,
             "body": json.dumps({
@@ -85,5 +87,12 @@ def create_order(event, context):
                 'usdxmr':usdxmr,
                 })
             }
+
+    # save the order in the database
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table('order')
+    table.put_item(Item=order)
+
+    return created_order
 
 
