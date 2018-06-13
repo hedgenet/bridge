@@ -5,6 +5,7 @@ import time
 import exchange_rate
 import hist_data
 import payment
+import boto
 
 from email_validator import validate_email
 
@@ -74,7 +75,7 @@ def create_order(event, context):
     # generate a unique ID for the order
     order_id = payment.create_order_id()
 
-    return {
+    created_order = {
             "statusCode":200,
             "body": json.dumps({
                 'order_id':order_id,

@@ -8,7 +8,7 @@ def spot(pair):
     params = {'pair':pair, 'count':1}
     result = api.query_public('Depth',data=params)['result'][pair]
 
-    ask = result['asks'][0][0]
-    bid = result['bids'][0][0]
+    ask = float(result['asks'][0][0])
+    bid = float(result['bids'][0][0])
 
     return (bid, ask)

@@ -30,6 +30,17 @@ Resources:
                         Path: /order
                         Method: post
 
+    OrderTable:
+        Type: AWS::Serverless::SimpleTable
+        Properties:
+            TableName: order
+            PrimaryKey:
+                Name: order_id
+                Type: String
+            ProvisionedThroughput:
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
+
 Outputs:
 
     BridgeApi:
