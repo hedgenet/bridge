@@ -5,7 +5,11 @@ import time
 import exchange_rate
 import hist_data
 import payment
-import boto
+import order
+import boto3
+import socket
+
+from decimal import Decimal
 
 from email_validator import validate_email
 
@@ -70,29 +74,34 @@ def create_order(event, context):
     usdxmr = 1/bid
 
     # create a payment address and add order_id to the address as a label.
-    address = payment.create_pay_address(label=None)
+    # address = payment.create_pay_address(label=None) ... IMPLEMENT THIS LATER
 
     # generate a unique ID for the order
-    order_id = payment.create_order_id()
-
+    order_id = order.create_order_id()
 
     # assemble the created order
     created_order = {
-            "statusCode":200,
-            "body": json.dumps({
-                'order_id':order_id,
-                'delivery_email':delivery_email,
-                'amount': amount,
-                'created_at':created_at,
-                'usdxmr':usdxmr,
-                })
-            }
+        'order_id':order_id,
+        'delivery_email':delivery_email,
+        'amount': str(amount),
+        'created_at':created_at,
+        'usdxmr':str(usdxmr),
+    }
+
 
     # save the order in the database
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('order')
-    table.put_item(Item=order)
+    if os.getenv('AWS_SAM_LOCAL'):
+        table = boto3.resource('dynamodb').Table('orderDev')
+    else:
+        table = boto3.resource('dynamodb').Table('order')
 
-    return created_order
+    table.put_item(Item=created_order)
+
+    http_result = {
+            "statusCode":200,
+            "body": json.dumps(created_order)
+            }
+
+    return http_result
 
 
