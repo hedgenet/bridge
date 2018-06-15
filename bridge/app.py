@@ -13,6 +13,37 @@ from decimal import Decimal
 
 from email_validator import validate_email
 
+# save the order in the database
+if os.getenv('AWS_SAM_LOCAL', ''):
+    table = boto3.resource('dynamodb', endpoint_url='http://dynamodb:8000').Table('order')
+else:
+    table = boto3.resource('dynamodb').Table(os.getenv("ORDER_TABLE_NAME"))
+
+def get_order(event, context):
+
+    order_id = None
+    try:
+        order_id = event['queryStringParameters']['order_id'][0]
+    except:
+        return {
+            "statusCode":400,
+            "body": json.dumps({
+                'message': 'request must contain query parameter string order_id'
+                })
+        }
+
+    # get the item in the database
+    response = table.get_item(
+            Key = {
+                'order_id':order_id
+                })
+
+    item = response.get('Item', None)
+    return {
+            "statusCode":200,
+            "body": json.dumps(item)
+        }
+
 def create_order(event, context):
     """ Creates an order """
 
@@ -87,21 +118,15 @@ def create_order(event, context):
         'order_id':order_id,
         'delivery_email':delivery_email,
         'amount': str(amount),
-        'quantity': 1,
-        'created_at':created_at,
+        'quantity': str(1),
+        'created_at':str(created_at),
         'usdxmr':str(usdxmr),
-        'white':'black',
         'state':init_state,
         'pay_address':'2138123dasnnaswde893492342347asde8q2w361236123618631834173',
-        'valid_until':valid_until
+        'valid_until':str(valid_until)
     }
 
 
-    # save the order in the database
-    if os.getenv('AWS_SAM_LOCAL', ''):
-        table = boto3.resource('dynamodb', endpoint_url='http://dynamodb:8000').Table('order')
-    else:
-        table = boto3.resource('dynamodb').Table(os.getenv("ORDER_TABLE_NAME"))
 
     table.put_item(Item=created_order)
 

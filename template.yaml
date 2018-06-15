@@ -9,6 +9,7 @@ Description: >
 Globals:
     Function:
         Timeout: 3
+
 Resources:
 
     CreateOrderFunction:
@@ -23,11 +24,27 @@ Resources:
                     CURRENCY_PAIR: XXMRZUSD
                     ORDER_TABLE_NAME: !Ref OrderTable
             Events:
-                HelloWorld:
+                CreateOrderEvent:
                     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                     Properties:
                         Path: /order
                         Method: post
+
+    GetOrderFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+            CodeUri: bridge/build/
+            Handler: app.get_order
+            Runtime: python3.6
+            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+                Variables:
+                    ORDER_TABLE_NAME: !Ref OrderTable
+            Events:
+                GetOrderEvent:
+                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                    Properties:
+                        Path: /order
+                        Method: get
 
     OrderTable:
         Type: AWS::Serverless::SimpleTable
