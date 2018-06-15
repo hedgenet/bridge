@@ -64,7 +64,7 @@ def create_order(event, context):
 
     # Compute the safety margin and the adjusted spot rate
     interval = 30
-    since = created_at - interval * 100 * 60
+    since = created_at - ( interval * 100 * 60 )
 
     mean, stdev = hist_data.moments(pair, interval, since)
 
@@ -73,6 +73,8 @@ def create_order(event, context):
 
     usdxmr = 1/bid
 
+    valid_until = created_at + ( 30 * 60 )
+
     # create a payment address and add order_id to the address as a label.
     # address = payment.create_pay_address(label=None) ... IMPLEMENT THIS LATER
 
@@ -80,20 +82,26 @@ def create_order(event, context):
     order_id = order.create_order_id()
 
     # assemble the created order
+    init_state = 'WAITPAY'
     created_order = {
         'order_id':order_id,
         'delivery_email':delivery_email,
         'amount': str(amount),
+        'quantity': 1,
         'created_at':created_at,
         'usdxmr':str(usdxmr),
+        'white':'black',
+        'state':init_state,
+        'pay_address':'2138123dasnnaswde893492342347asde8q2w361236123618631834173',
+        'valid_until':valid_until
     }
 
 
     # save the order in the database
-    if os.getenv('AWS_SAM_LOCAL'):
-        table = boto3.resource('dynamodb').Table('orderDev')
+    if os.getenv('AWS_SAM_LOCAL', ''):
+        table = boto3.resource('dynamodb', endpoint_url='http://dynamodb:8000').Table('order')
     else:
-        table = boto3.resource('dynamodb').Table('order')
+        table = boto3.resource('dynamodb').Table(os.getenv("ORDER_TABLE_NAME"))
 
     table.put_item(Item=created_order)
 
