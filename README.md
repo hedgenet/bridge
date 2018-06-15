@@ -1,20 +1,8 @@
-# bridge
+# Bridge
 
-This is a sample template for bridge - Below is a brief explanation of what we have generated for you:
+Bridge is an application that allows you to purchase merchandise using Monero;
+a privacy focused cryptocurrency
 
-```bash
-.
-├── README.md                   <-- This instructions file
-├── hello_world                 <-- Source code for a lambda function
-│   ├── __init__.py
-│   └── app.py                  <-- Lambda function code
-├── requirements.txt            <-- Python dependencies
-├── template.yaml               <-- SAM template
-└── tests                       <-- Unit tests
-    └── unit
-        ├── __init__.py
-        └── test_handler.py
-```
 
 ## Requirements
 
