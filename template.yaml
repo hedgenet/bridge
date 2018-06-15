@@ -9,8 +9,6 @@ Description: >
 Globals:
     Function:
         Timeout: 3
-
-
 Resources:
 
     CreateOrderFunction:
@@ -23,6 +21,7 @@ Resources:
                 Variables:
                     MIN_PURCHASE_AMOUNT: 10
                     CURRENCY_PAIR: XXMRZUSD
+                    ORDER_TABLE_NAME: !Ref OrderTable
             Events:
                 HelloWorld:
                     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
