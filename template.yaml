@@ -4,6 +4,20 @@ Description: >
     bridge
 
     Sample SAM Template for bridge
+
+Mappings:
+    NetworkMapping:
+        "testnet": "AMI-asdasdas"
+        "mainnet": "AMI-mainnet"
+
+Parameters: 
+  PaymentNodeType: 
+    Type: String
+    Default: testnet
+    AllowedValues: 
+      - testnet
+      - mainnet
+    Description: Enter testnet to deploy with testnet infra or mainnet for the mainnet. Default is testnet.
     
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -23,6 +37,13 @@ Resources:
                     MIN_PURCHASE_AMOUNT: 10
                     CURRENCY_PAIR: XXMRZUSD
                     ORDER_TABLE_NAME: !Ref OrderTable
+                    SSH_KEY_BUCKET_NAME: hedgenetkeys
+                    SSH_KEY_OBJECT: hedgenet-admin.pem
+                    DAEMON_HOST: ec2-35-182-141-65.ca-central-1.compute.amazonaws.com
+                    DAEMON_USERNAME: ubuntu
+                    DAEMON_PORT: 28888
+                    ORDER_ACCOUNT_INDEX: 1
+
             Events:
                 CreateOrderEvent:
                     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

@@ -107,7 +107,15 @@ def create_order(event, context):
     valid_until = created_at + ( 30 * 60 )
 
     # create a payment address and add order_id to the address as a label.
-    # address = payment.create_pay_address(label=None) ... IMPLEMENT THIS LATER
+    pay = payment.Payment(
+            os.environ['SSH_KEY_BUCKET_NAME'],
+            os.environ['SSH_KEY_OBJECT'],
+            os.environ['DAEMON_HOST'],
+            os.environ['DAEMON_USERNAME'],
+            int(os.environ['DAEMON_PORT']),
+            int(os.environ['ORDER_ACCOUNT_INDEX'])
+            )
+    address = pay.create_pay_address(label=order_id)
 
     # generate a unique ID for the order
     order_id = order.create_order_id()
@@ -122,7 +130,7 @@ def create_order(event, context):
         'created_at':str(created_at),
         'usdxmr':str(usdxmr),
         'state':init_state,
-        'pay_address':'2138123dasnnaswde893492342347asde8q2w361236123618631834173',
+        'pay_address':address,
         'valid_until':str(valid_until)
     }
 
