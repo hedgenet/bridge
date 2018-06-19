@@ -6,7 +6,6 @@ from monero.backends.jsonrpc import JSONRPCWallet
 
 from sshtunnel import SSHTunnelForwarder
 
-
 class Payment:
 
     def __init__(
@@ -35,8 +34,6 @@ class Payment:
                 ssh_pkey=pkey,
                 remote_bind_address=('127.0.0.1', daemon_port)
                 )
-
-
 
         return
 
