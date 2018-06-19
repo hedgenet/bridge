@@ -79,6 +79,7 @@ def create_order(event, context):
     # Make sure the provided amount is greater then the minimum purchase amount
     min_amount = float(os.environ['MIN_PURCHASE_AMOUNT'])
     if amount < min_amount :
+        print('AMOUNT CONDITION REACHED')
         return {
                 "statusCode":400,
                 "body": json.dumps({
@@ -107,6 +108,7 @@ def create_order(event, context):
     valid_until = created_at + ( 30 * 60 )
 
     # create a payment address and add order_id to the address as a label.
+
     pay = payment.Payment(
             os.environ['SSH_KEY_BUCKET_NAME'],
             os.environ['SSH_KEY_OBJECT'],
@@ -115,10 +117,13 @@ def create_order(event, context):
             int(os.environ['DAEMON_PORT']),
             int(os.environ['ORDER_ACCOUNT_INDEX'])
             )
-    address = pay.create_pay_address(label=order_id)
 
     # generate a unique ID for the order
     order_id = order.create_order_id()
+
+    # generate an address for the payment
+    address = pay.create_pay_address(label=order_id)
+
 
     # assemble the created order
     init_state = 'WAITPAY'
@@ -135,8 +140,10 @@ def create_order(event, context):
     }
 
 
+    # Will persist the item in the database
 
     table.put_item(Item=created_order)
+
 
     http_result = {
             "statusCode":200,

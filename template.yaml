@@ -42,7 +42,7 @@ Resources:
                     DAEMON_HOST: ec2-35-182-141-65.ca-central-1.compute.amazonaws.com
                     DAEMON_USERNAME: ubuntu
                     DAEMON_PORT: 28888
-                    ORDER_ACCOUNT_INDEX: 1
+                    ORDER_ACCOUNT_INDEX: 0
 
             Events:
                 CreateOrderEvent:
