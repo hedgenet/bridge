@@ -4,6 +4,8 @@ import paramiko
 from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
 
+from sshtunnel import SSHTunnelForwarder
+
 
 class Payment:
 
@@ -15,6 +17,8 @@ class Payment:
             daemon_username,
             daemon_port,
             order_account_index):
+
+        print('inside the payment object')
 
         self.order_account_index = order_account_index
 
@@ -33,10 +37,13 @@ class Payment:
                 remote_bind_address=('127.0.0.1', daemon_port)
                 )
 
+        print('will start the SSH tunnel')
         server.start()
 
         # Wallet
         self.wallet = Wallet(JSONRPCWallet(port=server.local_bind_port))
+
+        print('Payment Object Ready !!! ')
 
         return
 
